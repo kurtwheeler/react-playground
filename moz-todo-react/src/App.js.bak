@@ -1,0 +1,75 @@
+export const Task = ({
+  value,
+  isDone,
+  setIsDone
+}) => {
+  const handleInputChange = () => {
+    setIsDone(!isDone)
+  }
+  return (
+    <div>
+      <label>
+        {value}
+        <input
+          name="isDone"
+          type="checkbox"
+          checked={isDone}
+          onChange={handleInputChange} />
+      </label>
+      <br/>
+      <button type="submit">
+        Edit {value}
+      </button>
+      <button type="submit">Delete {value}</button>
+    </div>
+  );
+}
+
+
+function App() {
+  const tasks = [{"value": "Eat", "isDone": true}, {"value": "Sleep", "isDone": false}, {"value": "Repeat", "isDone": false}]
+
+  const updateDone = () => {}
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>
+          Kurt's Dope To Do Jawn
+        </h1>
+        <form>
+          <h2>
+            What needs to be done?
+          </h2>
+          <input type="text" name="name" />
+          <button type="submit" className="btn btn__primary btn__lg">
+            Add
+          </button>
+        </form>
+        <div>
+          <button type="button">
+            Show All Tasks
+          </button>
+          <button type="submit">
+            Show Active Tasks
+          </button>
+          <button type="submit">
+            Show Completed Tasks
+          </button>
+        </div>
+        <h2>
+          {tasks.length} tasks remaining
+        </h2>
+        <ul>
+          {tasks.map((task) =>
+            <Task key={task.value}
+                  value={task.value}
+                  isDone={task.isDone} setIsDone={updateDone}/>
+          )}
+        </ul>
+      </header>
+    </div>
+  );
+}
+
+export default App;
