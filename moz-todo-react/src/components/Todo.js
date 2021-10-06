@@ -1,8 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 const Todo = ({id, name, completed, toggleTaskCompleted, deleteTask, editTask}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(name);
+
+  const editFieldRef = useRef(null);
+  const editButtonRef = useRef(null);
+  const wasEditing = usePrevious(isEditing);
 
   function handleCheckboxChange(e) {
     toggleTaskCompleted(id)
@@ -33,7 +45,12 @@ const Todo = ({id, name, completed, toggleTaskCompleted, deleteTask, editTask}) 
         <label className="todo-label" htmlFor={id}>
           New name for {name}
         </label>
-        <input id={id} type="text" className="todo-text" value={newName} onChange={handleNameChange} />
+        <input id={id}
+               type="text"
+               className="todo-text"
+               value={newName}
+               onChange={handleNameChange}
+               ref={editFieldRef} />
       </div>
       <div className="btn-group">
         <button type="button" className="btn todo-cancel" onClick={toggleIsEditing}>
@@ -57,7 +74,10 @@ const Todo = ({id, name, completed, toggleTaskCompleted, deleteTask, editTask}) 
         </label>
       </div>
       <div className="btn-group">
-        <button type="button" className="btn" onClick={toggleIsEditing}>
+        <button type="button"
+                className="btn"
+                onClick={toggleIsEditing}
+                ref={editButtonRef}>
           Edit <span className="visually-hidden">{name}</span>
         </button>
         <button type="button" onClick={handleDelete} className="btn btn__danger">
@@ -66,6 +86,15 @@ const Todo = ({id, name, completed, toggleTaskCompleted, deleteTask, editTask}) 
       </div>
     </div>
   );
+
+  useEffect(() => {
+    if (!wasEditing && isEditing) {
+      editFieldRef.current.focus();
+    }
+    if (wasEditing && !isEditing) {
+      editButtonRef.current.focus();
+    }
+  }, [wasEditing, isEditing]);
 
   return <li className="todo">{isEditing ? editingTemplate : viewTemplate}</li>;
 }

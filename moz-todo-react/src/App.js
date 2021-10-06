@@ -1,9 +1,17 @@
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Todo from "./components/Todo";
 
 import { nanoid } from "nanoid";
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 
 function App(props) {
@@ -56,6 +64,15 @@ function App(props) {
     setTasks(updatedTasks);
   }
 
+  const listHeadingRef = useRef(null);
+  const prevTaskLength = usePrevious(tasks.length);
+
+  useEffect(() => {
+    if (tasks.length - prevTaskLength === -1) {
+      listHeadingRef.current.focus();
+    }
+  }, [tasks.length, prevTaskLength]);
+
   return (
     <div className="todoapp stack-large">
       <h1>Kurt's Dope To Do Jawn</h1>
@@ -65,10 +82,10 @@ function App(props) {
           <FilterButton key={filter}
                         filter={filter}
                         setFiltering={setFiltering}
-          isPressed={filter===filtering} />
+                        isPressed={filter===filtering} />
         )}
       </div>
-      <h2 id="list-heading">
+      <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>
         {tasks.filter(task => !task.completed).length} tasks remaining
       </h2>
       <ul
